@@ -1,7 +1,9 @@
 import streamlit as st
 
+
 def load_custom_css():
-    st.markdown("""
+    st.markdown(
+        """
     <style>
     /* ===================================
     🔤 FONT & RESET GLOBAL
@@ -74,7 +76,7 @@ def load_custom_css():
 
     div[role="radiogroup"] > label {
         position: relative !important;
-        width: 110% !important;
+        width: 90% !important;
         padding: 12px 16px !important;
         border-radius: 14px !important;
         border: 1px solid rgba(255,255,255,0.12) !important;
@@ -227,4 +229,6 @@ def load_custom_css():
         100% { opacity: 1; transform: translateY(0); }
     }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
