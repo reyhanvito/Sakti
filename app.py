@@ -6,19 +6,17 @@ import csv
 from email.message import EmailMessage
 import smtplib
 
+# ----------------- KONFIGURASI HALAMAN (WAJIB DI PALING ATAS) -----------------
+st.set_page_config(page_title="SAKTI", page_icon="logo_pidum.png", layout="wide")
+
 # ---- Load Custom CSS (aman untuk deploy) ----
 try:
     from styles.custom_css import load_custom_css
-
     load_custom_css()
 except Exception:
     st.markdown(
         "<style>body {background-color: white;}</style>", unsafe_allow_html=True
     )
-
-# ----------------- KONFIGURASI HALAMAN -----------------
-st.set_page_config(page_title="SAKTI", page_icon="💼", layout="wide")
-load_custom_css()
 
 LOG_FILE = "kunjungan_log.csv"
 
