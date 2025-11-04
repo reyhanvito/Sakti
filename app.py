@@ -17,7 +17,7 @@ except Exception:
     )
 
 # ----------------- KONFIGURASI HALAMAN -----------------
-st.set_page_config(page_title="SAKTI", page_icon="logo_pidum.png", layout="wide")
+st.set_page_config(page_title="SAKTI", page_icon="💼", layout="wide")
 load_custom_css()
 
 LOG_FILE = "kunjungan_log.csv"
