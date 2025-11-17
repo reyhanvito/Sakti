@@ -61,34 +61,81 @@ with st.sidebar:
 # ============================================================
 if menu == "SAKTI":
     st.markdown(
-        """
+    """
     <div style="
-        background:#ffffff;
-        border-radius:18px;
-        padding:26px 30px;
-        box-shadow:0 8px 22px rgba(0,0,0,0.07);
-        border:1px solid #e5e7eb;
-        margin-top:10px;
-        margin-bottom:24px;
-        animation: fadeInUp 0.6s ease-in-out;
+    background:#ffffff;
+    border-radius:18px;
+    padding:26px 30px;
+    box-shadow:0 8px 22px rgba(0,0,0,0.07);
+    border:1px solid #e5e7eb;
+    margin-top:10px;
+    margin-bottom:24px;
+    animation: fadeInUp 0.6s ease-in-out;
     ">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+    <!-- Header Form -->
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:12px;
+        margin-bottom:10px;
+    ">
         <div style="
-        background:linear-gradient(135deg,#cc383c,#7a0d0f);
-        color:#fff;
-        padding:10px;
-        border-radius:10px;
-        font-size:18px;
-        box-shadow:0 2px 5px rgba(0,0,0,0.2);
-        ">💳</div>
-        <h4 style="margin:0;color:#7a0d0f;font-size:20px;font-weight:800;">
-        Panduan Pengisian Sistem Administrasi Kunjungan Tahanan Terintegrasi (SAKTI)
+            background:linear-gradient(135deg,#cc383c,#7a0d0f);
+            color:#fff;
+            padding:10px;
+            border-radius:10px;
+            font-size:18px;
+            box-shadow:0 2px 5px rgba(0,0,0,0.2);
+        ">📝</div>
+        <h4 style="
+            margin:0;
+            color:#7a0d0f;
+            font-size:20px;
+            font-weight:800;
+        ">
+            Panduan Pengisian Formulir Kunjungan Tahanan (SAKTI)
         </h4>
     </div>
-    <hr style="border:none; border-top:1px solid #e5e7eb; margin:18px 0;">
+
+    <!-- Deskripsi Form -->
+    <p style="
+        color:#374151;
+        font-size:15px;
+        margin:4px 0 16px 0;
+        line-height:1.7;
+    ">
+        Silakan isi data <b>tahanan</b> dan <b>pemohon (pengunjung)</b> dengan benar.
+        Perhatikan hal-hal berikut sebelum mengirim formulir:
+    </p>
+
+    <ul style="
+        margin:6px 0 12px 20px;
+        padding:0;
+        color:#374151;
+        font-size:15px;
+        line-height:1.7;
+    ">
+        <li>Kolom dengan tanda <span style="color:red;">*</span> wajib diisi.</li>
+        <li><b>Nama Tahanan</b> hanya yang termasuk daftar tahanan yang sudah masuk ke tahap penuntutan.</li>
+        <li><b>Jenis hubungan</b> dengan tahanan harus ditulis jelas, misalnya:
+            <i>Ayah Kandung, Ibu Kandung, Istri, Anak, Kakak, Adik, Paman, Teman Kerja</i>, dan sebagainya.</li>
+        <li><b>Foto</b> wajib menampilkan <b>wajah pemohon</b> dan <b>KTP</b> secara jelas dalam satu foto.</li>
+        <li>Proses administrasi surat jenguk berlaku untuk
+            <b>1x kunjungan (30 menit / 60 menit)</b>.</li>
+    </ul>
+
+    <p style="
+        color:#6b7280;
+        font-size:14px;
+        margin-top:6px;
+        font-style:italic;
+    ">
+    *Sesuai ketentuan pelayanan kunjungan tahanan Kejaksaan Negeri Banyumas.
+    </p>
+    </div>
     """,
-        unsafe_allow_html=True,
-    )
+    unsafe_allow_html=True,
+        )
 
     # ----------------- DATA TAHANAN -----------------
     tahanan_options = {
@@ -182,24 +229,45 @@ if menu == "SAKTI":
     # ----------------- FORM -----------------
     with st.form("form_sakti"):
         st.markdown("### Pilih Tahanan", unsafe_allow_html=True)
-        nama_tahanan = st.selectbox("Nama Tahanan", list(filtered_tahanan.keys()))
+        nama_tahanan = st.selectbox(
+            "Nama Tahanan *",
+            list(filtered_tahanan.keys()),
+            help="Pilih tahanan yang sudah masuk ke tahap penuntutan dan terdaftar dalam sistem."
+        )
+
         data_tahanan = filtered_tahanan[nama_tahanan]
 
         st.markdown("### Data Pemohon (Pengunjung)", unsafe_allow_html=True)
-        nama_pemohon = st.text_input("Nama Pemohon")
-        alamat_pemohon = st.text_area("Alamat Pemohon")
+        nama_pemohon = st.text_input("Nama Pemohon *")
+        alamat_pemohon = st.text_area("Alamat Pemohon *")
         pekerjaan_pemohon = st.text_input("Pekerjaan Pemohon", "Belum / Tidak Bekerja")
-        hubungan = st.text_input("Hubungan dengan Tahanan")
-        keperluan = st.text_input("Keperluan Kunjungan", "Besuk Tahanan")
-        tanggal_kunjungan = st.date_input("Tanggal Berlaku", value=today)
+        hubungan = st.text_input(
+            "Hubungan dengan Tahanan *",
+            help="Tuliskan secara jelas, misalnya: Ayah Kandung, Ibu Kandung, Istri, Anak, Kakak, Adik, Paman, Teman Kerja, dll."
+        )
+        keperluan = st.text_input(
+            "Keperluan Kunjungan *",
+            "Besuk Tahanan",
+            help="Contoh: Besuk Tahanan / Mengantar pakaian / Lainnya (jelaskan)."
+        )
+        tanggal_kunjungan = st.date_input(
+            "Tanggal Berlaku *",
+            value=today,
+            help="Tanggal kunjungan sesuai jadwal, surat berlaku untuk 1x kunjungan (30 menit / 60 menit)."
+        )
 
         # 📸 Ambil Foto KTP Langsung
-        foto_ktp = st.camera_input("📷 Ambil Foto KTP Langsung")
-
+        foto_ktp = st.camera_input(
+            "📷 Foto Pemohon & KTP *",
+            help="Pastikan wajah pemohon dan KTP terlihat jelas dalam satu foto."
+        )
         submit_sakti = st.form_submit_button("🚀 Generate & Kirim ke Admin")
 
     # ----------------- PROSES -----------------
     if submit_sakti:
+        if not nama_pemohon or not alamat_pemohon or not hubungan or not keperluan:
+            st.error("❌ Mohon lengkapi semua kolom yang bertanda * (wajib).")
+            st.stop()
         if not foto_ktp:
             st.error("❌ Mohon ambil foto KTP terlebih dahulu.")
             st.stop()
