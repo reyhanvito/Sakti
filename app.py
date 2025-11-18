@@ -116,12 +116,13 @@ if menu == "SAKTI":
         line-height:1.7;
     ">
         <li>Kolom dengan tanda <span style="color:red;">*</span> wajib diisi.</li>
-        <li><b>Nama Tahanan</b> hanya yang termasuk daftar tahanan yang sudah masuk ke tahap penuntutan.</li>
+        <li><b>Nama Tahanan</b> hanya untuk tahanan yang <b>sudah masuk ke tahap penuntutan</b> dan
+            <b>belum dilimpahkan ke pengadilan</b>.</li>
         <li><b>Jenis hubungan</b> dengan tahanan harus ditulis jelas, misalnya:
             <i>Ayah Kandung, Ibu Kandung, Istri, Anak, Kakak, Adik, Paman, Teman Kerja</i>, dan sebagainya.</li>
         <li><b>Foto</b> wajib menampilkan <b>wajah pemohon</b> dan <b>KTP</b> secara jelas dalam satu foto.</li>
-        <li>Proses administrasi surat jenguk berlaku untuk
-            <b>1x kunjungan (30 menit / 60 menit)</b>.</li>
+        <li>Proses administrasi pembuatan surat jenguk
+            <b>(30 menit / 60 menit)</b>.</li>
     </ul>
 
     <p style="
@@ -253,7 +254,7 @@ if menu == "SAKTI":
         tanggal_kunjungan = st.date_input(
             "Tanggal Berlaku *",
             value=today,
-            help="Tanggal kunjungan sesuai jadwal, surat berlaku untuk 1x kunjungan (30 menit / 60 menit)."
+            help="Tanggal kunjungan sesuai jadwal yang sudah ditentukan."
         )
 
         # 📸 Ambil Foto KTP Langsung
