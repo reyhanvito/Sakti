@@ -1,13 +1,14 @@
 import streamlit as st
 from datetime import date, timedelta
-from docxtpl import DocxTemplate
+from docxtpl import DocxTemplate, InlineImage
+from docx.shared import Mm
 import os
 import csv
 from email.message import EmailMessage
 import smtplib
 
 # ----------------- KONFIGURASI HALAMAN (WAJIB DI PALING ATAS) -----------------
-st.set_page_config(page_title="SAKTI", page_icon="logo_pidum.png", layout="wide")
+st.set_page_config(page_title="SINATA", page_icon="logo_pidum.png", layout="wide")
 
 # ---- Load Custom CSS (aman untuk deploy) ----
 try:
@@ -39,7 +40,7 @@ def tulis_log(nama_pemohon, nama_tahanan, tanggal_kunjungan, tanggal_surat):
 st.markdown(
     """
 <div class="header-container">
-    <div class="header-title">SAKTI – Sistem Administrasi Kunjungan Tahanan Terintegrasi</div>
+    <div class="header-title">SINATA – Sistem Administrasi Kunjungan Tahanan Terintegrasi</div>
     <div class="header-sub">
         <span class="sub-highlight">Kejaksaan Negeri Banyumas</span>
         <span class="separator">|</span>
@@ -54,12 +55,12 @@ st.markdown(
 with st.sidebar:
     st.image("logo_pidum.png")
     st.markdown("<h3 class='sidebar-title'>Menu</h3>", unsafe_allow_html=True)
-    menu = st.radio("", ["SAKTI", "Login Admin"], label_visibility="collapsed", index=0)
+    menu = st.radio("", ["SINATA", "Login Admin"], label_visibility="collapsed", index=0)
 
 # ============================================================
 # ======================== MENU SAKTI ========================
 # ============================================================
-if menu == "SAKTI":
+if menu == "SINATA":
     st.markdown(
     """
     <div style="
@@ -93,7 +94,7 @@ if menu == "SAKTI":
             font-size:20px;
             font-weight:800;
         ">
-            Panduan Pengisian Formulir Kunjungan Tahanan (SAKTI)
+            Panduan Pengisian Formulir Kunjungan Tahanan (SINATA)
         </h4>
     </div>
 
@@ -155,6 +156,7 @@ if menu == "SAKTI":
             "pendidikan": "SD",
             "tanggal_kunjungan": date(2025, 11, 2),
             "batas_hari": 20,
+            "foto_terdakwa": "ajitsk1.png",   # <--- TAMBAHAN INI
         },
         "Fikich Probo Sutrisno als Botak bin (alm) Ngadino": {
             "alias": "Botak",
@@ -345,6 +347,26 @@ if menu == "SAKTI":
         # Format nomor surat resmi
         nomor_surat = f"B-{nomor_urut}/M.3.39/Es.2/{today.month}/{today.year}"
 
+        # Simpan foto KTP / pemohon sementara (untuk dimasukkan ke surat & lampiran email)
+        ktp_path = f"KTP_{nama_pemohon or 'Pemohon'}.jpg"
+        with open(ktp_path, "wb") as f:
+            f.write(foto_ktp.getbuffer())
+
+        # Siapkan template dokumen
+        surat_path = f"Surat_Izin_Kunjungan_{nama_pemohon or 'Pemohon'}.docx"
+        doc = DocxTemplate("Surat_Template.docx")
+
+        # Siapkan gambar untuk template (InlineImage)
+        # Foto pengunjung (hasil kamera) -> {{ foto_pengunjung }}
+        foto_pengunjung_tpl = InlineImage(doc, ktp_path, width=Mm(60))
+
+        # Foto terdakwa (dari data tahanan) -> {{ foto_terdakwa }}
+        foto_terdakwa_file = data_tahanan.get("foto_terdakwa")
+        if foto_terdakwa_file and os.path.exists(foto_terdakwa_file):
+            foto_terdakwa_tpl = InlineImage(doc, foto_terdakwa_file, width=Mm(60))
+        else:
+            foto_terdakwa_tpl = ""   # kalau belum ada foto, biarkan kosong
+
         # Context untuk surat
         context = {
             "nomor_surat": nomor_surat,
@@ -365,11 +387,13 @@ if menu == "SAKTI":
             "keperluan": keperluan or "-",
             "tanggal_kunjungan": tanggal_kunjungan.strftime("%d %B %Y"),
             "tanggal_surat": today.strftime("%d %B %Y"),
+
+            # === KONTEKS FOTO UNTUK TEMPLATE DOCX ===
+            "foto_pengunjung": foto_pengunjung_tpl,
+            "foto_terdakwa": foto_terdakwa_tpl,
         }
 
         # Buat surat izin (Word)
-        surat_path = f"Surat_Izin_Kunjungan_{nama_pemohon or 'Pemohon'}.docx"
-        doc = DocxTemplate("Surat_Template.docx")
         doc.render(context)
         doc.save(surat_path)
 
@@ -386,7 +410,7 @@ if menu == "SAKTI":
             f"untuk tahanan {nama_tahanan}.\n"
             f"Tanggal Berlaku: {tanggal_kunjungan.strftime('%d %B %Y')}.\n\n"
             f"Terlampir surat izin dan foto KTP pemohon.\n\n"
-            f"Hormat kami,\nSAKTI – Kejaksaan Negeri Banyumas"
+            f"Hormat kami,\nSINATA – Kejaksaan Negeri Banyumas"
         )
 
         with st.spinner("📨 Mengirim surat & KTP ke admin..."):
